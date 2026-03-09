@@ -7,23 +7,112 @@ import { migrateDashboard } from "../services/api";
 const API_BASE = "http://localhost:8000";
 const previewCache = new Map();
 
+/* ── Icons ── */
+const BackIcon = () => (
+  <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+    <path d="M9 2.5L4.5 6.5 9 10.5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+const DashboardIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+    <rect x="2" y="2" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+    <rect x="10" y="2" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+    <rect x="2" y="10" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+    <rect x="10" y="10" width="6" height="6" rx="1.5" stroke="currentColor" strokeWidth="1.5"/>
+  </svg>
+);
+const MapIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+    <path d="M5.5 1.5L1.5 3.5v10l4-2 4 2 4-2v-10l-4 2-4-2z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+    <path d="M5.5 1.5v10M9.5 3.5v10" stroke="currentColor" strokeWidth="1.4"/>
+  </svg>
+);
+const BarChartIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+    <path d="M2 13V8M6 13V4M10 13V6M14 13V2" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"/>
+  </svg>
+);
+const IdIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+    <rect x="1.5" y="3" width="11" height="8" rx="1.5" stroke="currentColor" strokeWidth="1.4"/>
+    <circle cx="4.5" cy="7" r="1.5" stroke="currentColor" strokeWidth="1.2"/>
+    <path d="M7.5 5.5h3M7.5 8.5h2" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+  </svg>
+);
+const TokenIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+    <path d="M7 1.5L12 4.5v5L7 12.5 2 9.5v-5L7 1.5z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round"/>
+    <path d="M7 4v6M4.5 5.5l5 3M9.5 5.5l-5 3" stroke="currentColor" strokeWidth="1.2" strokeLinecap="round"/>
+  </svg>
+);
+const CookieIcon = () => (
+  <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
+    <circle cx="7" cy="7" r="5.5" stroke="currentColor" strokeWidth="1.4"/>
+    <circle cx="5" cy="6" r="0.8" fill="currentColor"/>
+    <circle cx="8.5" cy="5" r="0.8" fill="currentColor"/>
+    <circle cx="7" cy="9" r="0.8" fill="currentColor"/>
+    <circle cx="4.5" cy="8.5" r="0.6" fill="currentColor"/>
+    <circle cx="9.5" cy="8" r="0.6" fill="currentColor"/>
+  </svg>
+);
+const CheckCircleIcon = () => (
+  <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
+    <circle cx="8.5" cy="8.5" r="7.5" stroke="currentColor" strokeWidth="1.5"/>
+    <path d="M5.5 8.5l2.5 2.5 4-4.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"/>
+  </svg>
+);
+const AlertCircleIcon = () => (
+  <svg width="17" height="17" viewBox="0 0 17 17" fill="none">
+    <circle cx="8.5" cy="8.5" r="7.5" stroke="currentColor" strokeWidth="1.5"/>
+    <path d="M8.5 5v4M8.5 11.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"/>
+  </svg>
+);
+const ZapIcon = () => (
+  <svg width="15" height="15" viewBox="0 0 15 15" fill="none">
+    <path d="M9 1.5L3 8.5h5.5L6 13.5l6-7.5H6.5L9 1.5z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" fill="currentColor" fillOpacity="0.15"/>
+  </svg>
+);
+
+/* ── Section Card ── */
+const SectionCard = ({ number, title, icon, children }) => (
+  <div style={{
+    background: "rgba(255,255,255,0.88)",
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
+    border: "1.5px solid rgba(255,255,255,0.95)",
+    borderRadius: 18,
+    overflow: "hidden",
+    boxShadow: "0 4px 20px rgba(99,102,241,0.06), 0 2px 6px rgba(15,23,42,0.04)",
+  }}>
+    {/* Section header */}
+    <div style={{ padding: "0.85rem 1.15rem", borderBottom: "1px solid var(--border)", display: "flex", alignItems: "center", gap: 10, background: "linear-gradient(135deg, rgba(99,102,241,0.03) 0%, rgba(129,140,248,0.02) 100%)" }}>
+      <div style={{ width: 28, height: 28, background: "var(--violet-dim)", border: "1px solid rgba(99,102,241,0.18)", borderRadius: 8, display: "flex", alignItems: "center", justifyContent: "center", color: "var(--violet)", flexShrink: 0 }}>
+        {icon}
+      </div>
+      <div>
+        <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: "0.75rem", color: "var(--text-primary)", lineHeight: 1.2 }}>{title}</div>
+        <div style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: "0.58rem", fontWeight: 700, letterSpacing: "0.09em", textTransform: "uppercase", color: "var(--text-muted)", marginTop: 1 }}>{number}</div>
+      </div>
+    </div>
+    <div style={{ padding: "1rem 1.15rem" }}>
+      {children}
+    </div>
+  </div>
+);
+
 export default function Step3Migrate({ lookerCreds, selectedDash }) {
   const navigate = useNavigate();
-
-  const [domoForm, setDomoForm]                 = useState({ pageId: "", csrf: "", cookie: "" });
+  const [domoForm, setDomoForm] = useState({ pageId: "", csrf: "", cookie: "" });
   const [resolvedMappings, setResolvedMappings] = useState({});
-  const [lookerViews, setLookerViews]           = useState([]);
-  const [visuals, setVisuals]                   = useState([]);
-  const [dashboardTitle, setDashboardTitle]     = useState("");
-  const [loading, setLoading]                   = useState(true);
-  const [status, setStatus]                     = useState("");
+  const [lookerViews, setLookerViews] = useState([]);
+  const [visuals, setVisuals] = useState([]);
+  const [dashboardTitle, setDashboardTitle] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [status, setStatus] = useState("");
 
-  /* ── FETCH PREVIEW ── */
   useEffect(() => {
     if (!lookerCreds || !selectedDash) { navigate("/"); return; }
-
     const cacheKey = `${lookerCreds.url}__${selectedDash.id}`;
-
     if (previewCache.has(cacheKey)) {
       const c = previewCache.get(cacheKey);
       setDashboardTitle(c.dashboard_name || selectedDash.title);
@@ -32,82 +121,71 @@ export default function Step3Migrate({ lookerCreds, selectedDash }) {
       setLoading(false);
       return;
     }
-
     setLoading(true);
-    axios
-      .post(`${API_BASE}/looker/preview`, {
-        looker_url:           lookerCreds.url,
-        looker_id:            selectedDash.id,
-        looker_client_id:     lookerCreds.id,
-        looker_client_secret: lookerCreds.secret,
-      })
-      .then((res) => {
-        previewCache.set(cacheKey, res.data);
-        setDashboardTitle(res.data.dashboard_name || selectedDash.title);
-        setLookerViews(res.data.looker_datasets || []);
-        setVisuals(res.data.visuals || []);
-      })
-      .catch((err) => console.error("Preview error:", err))
-      .finally(() => setLoading(false));
+    axios.post(`${API_BASE}/looker/preview`, {
+      looker_url: lookerCreds.url, looker_id: selectedDash.id,
+      looker_client_id: lookerCreds.id, looker_client_secret: lookerCreds.secret,
+    })
+    .then((res) => {
+      previewCache.set(cacheKey, res.data);
+      setDashboardTitle(res.data.dashboard_name || selectedDash.title);
+      setLookerViews(res.data.looker_datasets || []);
+      setVisuals(res.data.visuals || []);
+    })
+    .catch(err => console.error("Preview error:", err))
+    .finally(() => setLoading(false));
   }, [lookerCreds?.url, lookerCreds?.id, selectedDash?.id]);
 
-  const updateMapping = (viewName, domoId) =>
-    setResolvedMappings((prev) => ({ ...prev, [viewName]: domoId }));
-
-  /* ── MIGRATE ── */
   const executeMigration = async () => {
     if (!domoForm.pageId || !domoForm.csrf || !domoForm.cookie) {
-      alert("Please fill in Page ID, CSRF Token, and Cookies.");
+      alert("Please fill in all Domo session fields.");
       return;
     }
-    const missing = lookerViews.filter((v) => !resolvedMappings[v.name]?.trim());
+    const missing = lookerViews.filter(v => !resolvedMappings[v.name]?.trim());
     if (missing.length > 0) {
-      alert("Please provide a Domo Dataset UUID for: " + missing.map((v) => v.name).join(", "));
+      alert("Missing dataset UUIDs for: " + missing.map(v => v.name).join(", "));
       return;
     }
     setStatus("loading");
     try {
       await migrateDashboard({
-        looker_url:           lookerCreds.url,
-        looker_client_id:     lookerCreds.id,
-        looker_client_secret: lookerCreds.secret,
-        looker_id:            selectedDash.id,
-        domo_page_id:         domoForm.pageId,
-        domo_cookie:          domoForm.cookie,
-        domo_csrf:            domoForm.csrf,
-        dataset_mapping:      resolvedMappings,
+        looker_url: lookerCreds.url, looker_client_id: lookerCreds.id,
+        looker_client_secret: lookerCreds.secret, looker_id: selectedDash.id,
+        domo_page_id: domoForm.pageId, domo_cookie: domoForm.cookie,
+        domo_csrf: domoForm.csrf, dataset_mapping: resolvedMappings,
       });
       setStatus("success");
     } catch (err) {
-      const detail = err.response?.data?.detail
-        ? JSON.stringify(err.response.data.detail)
-        : err.message;
+      const detail = err.response?.data?.detail ? JSON.stringify(err.response.data.detail) : err.message;
       setStatus("error:" + detail);
     }
   };
 
-  /* ── GUARD ── */
   if (!selectedDash) {
     return (
-      <div className="h-full flex flex-col items-center justify-center gap-3 px-4">
-        <p className="text-slate-500 text-sm">No dashboard selected.</p>
-        <button onClick={() => navigate("/dashboards")}
-          className="px-5 py-2 rounded-xl text-sm font-semibold text-white bg-indigo-600 hover:bg-indigo-700 transition cursor-pointer">
-          ← Back to Dashboards
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "0.75rem" }}>
+        <p style={{ color: "var(--text-muted)", fontSize: "0.85rem" }}>No dashboard selected.</p>
+        <button onClick={() => navigate("/dashboards")} className="btn-primary" style={{ width: "auto", padding: "0.6rem 1.4rem" }}>
+          Back to Dashboards
         </button>
       </div>
     );
   }
 
-  /* ── LOADING ── */
   if (loading) {
     return (
-      <div className="h-full flex flex-col items-center justify-center gap-3">
-        <svg className="animate-spin h-6 w-6 text-indigo-600" viewBox="0 0 24 24" fill="none">
-          <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-          <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-        </svg>
-        <p className="text-sm text-indigo-600 font-medium">Scanning Looker Dashboard Assets...</p>
+      <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: "1.2rem" }}>
+        <div style={{ position: "relative", width: 52, height: 52 }}>
+          <div style={{ position: "absolute", inset: 0, border: "2px solid var(--border)", borderRadius: "50%" }} />
+          <div style={{ position: "absolute", inset: 0, border: "2px solid transparent", borderTopColor: "var(--violet)", borderRightColor: "var(--violet-light)", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+          <div style={{ position: "absolute", inset: 8, background: "var(--violet-dim)", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center", color: "var(--violet)" }}>
+            <DashboardIcon />
+          </div>
+        </div>
+        <div style={{ textAlign: "center" }}>
+          <p style={{ margin: 0, fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: "0.9rem", color: "var(--text-primary)" }}>Scanning Assets</p>
+          <p style={{ margin: "0.25rem 0 0", fontSize: "0.78rem", color: "var(--text-muted)" }}>Analysing dashboard components…</p>
+        </div>
       </div>
     );
   }
@@ -119,181 +197,190 @@ export default function Step3Migrate({ lookerCreds, selectedDash }) {
 
   return (
     <motion.div
-      initial={{ opacity: 0, scale: 0.97 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ duration: 0.3 }}
-      className="flex flex-col h-full px-3 sm:px-6 py-3"
+      initial={{ opacity: 0, y: 14 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.38, ease: [0.22, 1, 0.36, 1] }}
+      style={{ flex: 1, display: "flex", flexDirection: "column", overflow: "hidden", padding: "clamp(0.75rem, 2vw, 1rem) clamp(0.75rem, 3vw, 1.25rem)" }}
     >
-
-
-        
-      {/* Inject CSS to hide scrollbar on .hide-scrollbar */}
-      <style>{`
-        .hide-scrollbar {
-          overflow-y: auto;
-          scrollbar-width: none;       /* Firefox */
-          -ms-overflow-style: none;    /* IE/Edge */
-        }
-        .hide-scrollbar::-webkit-scrollbar {
-          display: none;               /* Chrome/Safari/Opera */
-        }
-      `}</style>
-
       {/* Back */}
-      <div className="flex-shrink-0 mb-2">
-        <button onClick={() => navigate("/dashboards")}
-          className="text-xs text-indigo-600 hover:underline cursor-pointer">
-          ← Back to Dashboards
+      <div style={{ flexShrink: 0, marginBottom: "0.7rem" }}>
+        <button
+          onClick={() => navigate("/dashboards")}
+          style={{ background: "none", border: "none", padding: "0.2rem 0", color: "var(--text-muted)", fontSize: "0.78rem", fontFamily: "'Outfit', sans-serif", cursor: "pointer", display: "flex", alignItems: "center", gap: 4, transition: "color 0.18s" }}
+          onMouseEnter={e => e.currentTarget.style.color = "var(--violet)"}
+          onMouseLeave={e => e.currentTarget.style.color = "var(--text-muted)"}
+        >
+          <BackIcon /> Back to Dashboards
         </button>
       </div>
 
-      {/*
-        Outer body: scrolls to reach all content but scrollbar is invisible.
-        Charts table inside has its own visible scrollbar.
-      */}
-<div className="hide-scrollbar flex-1 max-w-2xl mx-auto w-full pb-24">        <div className="flex flex-col gap-3 pb-4">
+      {/* Scroll area */}
+      <div className="hide-scrollbar" style={{ flex: 1, overflowY: "auto" }}>
+        <div style={{ maxWidth: 660, margin: "0 auto", display: "flex", flexDirection: "column", gap: "0.9rem", paddingBottom: "2rem" }}>
 
-          {/* ── Dashboard Title ── */}
-          <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow border border-indigo-100 px-4 py-3">
-            <p className="text-xs text-black uppercase tracking-widest font-semibold mb-0.5">
-              Dashboard Title
-            </p>
-            <p className="text-sm font-bold text-indigo-700 truncate">{dashboardTitle}</p>
+          {/* Page title */}
+          <div>
+            {/* <div style={{ display: "inline-flex", alignItems: "center", gap: 6, background: "var(--violet-dim)", border: "1px solid rgba(99,102,241,0.18)", borderRadius: 99, padding: "0.2rem 0.65rem", marginBottom: "0.45rem" }}>
+              <div style={{ width: 6, height: 6, borderRadius: "50%", background: "var(--violet)", animation: "dotPulse 2s ease-in-out infinite" }} />
+              <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: "0.62rem", fontWeight: 700, letterSpacing: "0.09em", textTransform: "uppercase", color: "var(--violet)" }}>Step 3 of 3</span>
+            </div> */}
+            <h2 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 800, fontSize: "clamp(1.1rem, 3vw, 1.35rem)", color: "var(--text-primary)", margin: 0, letterSpacing: "-0.01em" }}>
+              Configure & Migrate
+            </h2>
           </div>
 
-          {/* ── Section 1: Required Domo Datasets ── */}
-          <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow border border-indigo-100 px-4 py-3">
-            <p className="text-xs text-black uppercase tracking-widest font-semibold mb-1">
-              1. Required Domo Datasets
-            </p>
-            <p className="text-xs text-slate-500 mb-2">
-              Provide the Domo Dataset UUID for each Looker View used in this dashboard.
+          {/* Dashboard title chip */}
+          <div style={{ background: "rgba(255,255,255,0.88)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)", border: "1.5px solid rgba(255,255,255,0.95)", borderRadius: 14, padding: "0.8rem 1.1rem", display: "flex", alignItems: "center", gap: "0.75rem", boxShadow: "0 2px 12px rgba(99,102,241,0.06)" }}>
+            <div style={{ width: 36, height: 36, background: "var(--violet-dim)", border: "1px solid rgba(99,102,241,0.18)", borderRadius: 10, display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, color: "var(--violet)" }}>
+              <DashboardIcon />
+            </div>
+            <div style={{ minWidth: 0 }}>
+              <div className="field-label" style={{ marginBottom: 2 }}>Selected Dashboard</div>
+              <div style={{ fontSize: "0.9rem", fontWeight: 700, color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", fontFamily: "'Bricolage Grotesque', sans-serif" }}>
+                {dashboardTitle}
+              </div>
+            </div>
+          </div>
+
+          {/* Section 1: Dataset Mapping */}
+          <SectionCard number="" title="Dataset Mapping" icon={<MapIcon />}>
+            <p style={{ margin: "0 0 0.9rem", fontSize: "0.8rem", color: "var(--text-secondary)", lineHeight: 1.55 }}>
+              Map each Looker view to its corresponding Domo Dataset UUID.
             </p>
             {lookerViews.length === 0 ? (
-              <p className="text-xs text-slate-400 italic">No views found from API.</p>
+              <p style={{ margin: 0, fontSize: "0.8rem", color: "var(--text-muted)", fontStyle: "italic" }}>No Looker views detected.</p>
             ) : (
-              <div className="space-y-2">
+              <div style={{ display: "flex", flexDirection: "column", gap: "0.8rem" }}>
                 {lookerViews.map((view, i) => (
-                  <div key={i} className="flex flex-col gap-1">
-                    <span className="text-xs font-semibold text-indigo-700">{view.name}</span>
+                  <div key={i} style={{ background: "var(--bg-subtle)", border: "1px solid var(--border)", borderRadius: 12, padding: "0.75rem" }}>
+                    <label className="field-label" style={{ display: "flex", alignItems: "center", gap: 5, marginBottom: "0.45rem" }}>
+                      <span style={{ color: "var(--violet)" }}><MapIcon /></span>
+                      {view.name}
+                    </label>
                     <input
-                      className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition bg-white"
-                      placeholder="Enter Domo Dataset UUID..."
+                      className="fancy-input"
+                      placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
                       value={resolvedMappings[view.name] || ""}
-                      onChange={(e) => updateMapping(view.name, e.target.value)}
+                      onChange={(e) => setResolvedMappings(p => ({ ...p, [view.name]: e.target.value }))}
+                      style={{ fontFamily: "monospace", fontSize: "0.8rem", background: "white" }}
                     />
                   </div>
                 ))}
               </div>
             )}
-          </div>
+          </SectionCard>
 
-          {/* ── Section 2: Charts to be Migrated — scrollbar visible here only ── */}
+          {/* Section 2: Charts (conditional) */}
           {visuals.length > 0 && (
-            <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow border border-indigo-100 px-4 py-3">
-              <p className="text-xs text-black uppercase tracking-widest font-semibold mb-2">
-                2. Charts to be Migrated
-              </p>
-              {/* This table has its OWN visible scrollbar */}
-<div className="max-h-64 overflow-y-auto overflow-x-hidden rounded-xl border border-slate-200">                <table className="w-full min-w-[320px] table-auto text-xs">
-                  <thead className="sticky top-0 z-10">
-                    <tr className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white">
-                      <th className="px-3 py-2 text-left font-semibold whitespace-nowrap">Title</th>
-                      <th className="px-3 py-2 text-left font-semibold whitespace-nowrap">Type</th>
-                      <th className="px-3 py-2 text-left font-semibold whitespace-nowrap">Source Looker View</th>
+            <SectionCard number="" title={`Charts to Migrate (${visuals.length})`} icon={<BarChartIcon />}>
+              <div style={{ border: "1px solid var(--border)", borderRadius: 12, overflow: "hidden", maxHeight: 230, overflowY: "auto" }}>
+                <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "0.8rem" }}>
+                  <thead>
+                    <tr style={{ background: "linear-gradient(135deg, rgba(99,102,241,0.05), rgba(129,140,248,0.03))", borderBottom: "1px solid var(--border)" }}>
+                      {["Title", "Type", "Looker View"].map((h, i) => (
+                        <th key={h} style={{ padding: "0.5rem 0.8rem", textAlign: "left", fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: "0.6rem", letterSpacing: "0.08em", textTransform: "uppercase", color: "var(--text-muted)" }}>{h}</th>
+                      ))}
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-slate-100">
+                  <tbody>
                     {visuals.map((viz, idx) => (
-                      <tr key={idx} className="hover:bg-indigo-50 transition-colors">
-                        <td className="px-3 py-2 text-slate-700 font-medium whitespace-nowrap">{viz.title || "—"}</td>
-                        <td className="px-3 py-2 whitespace-nowrap">
-                          <span className="px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-semibold">
+                      <tr
+                        key={idx}
+                        style={{ borderBottom: "1px solid var(--border)", transition: "background 0.15s" }}
+                        onMouseEnter={e => e.currentTarget.style.background = "rgba(99,102,241,0.03)"}
+                        onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+                      >
+                        <td style={{ padding: "0.5rem 0.8rem", fontWeight: 500, color: "var(--text-primary)", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 160 }}>{viz.title || "—"}</td>
+                        <td style={{ padding: "0.5rem 0.8rem", whiteSpace: "nowrap" }}>
+                          <span style={{ background: "var(--violet-dim)", border: "1px solid rgba(99,102,241,0.18)", color: "var(--violet)", fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, fontSize: "0.6rem", letterSpacing: "0.06em", textTransform: "uppercase", padding: "0.15rem 0.45rem", borderRadius: 6 }}>
                             {viz.type || "—"}
                           </span>
                         </td>
-                        <td className="px-3 py-2 text-slate-500 font-mono whitespace-nowrap">
-                          {lookerViews.find((v) => v.id === viz.datasetRef)?.name || viz.datasetRef || "—"}
+                        <td style={{ padding: "0.5rem 0.8rem", color: "var(--text-secondary)", fontFamily: "monospace", fontSize: "0.73rem", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: 140 }}>
+                          {lookerViews.find(v => v.id === viz.datasetRef)?.name || viz.datasetRef || "—"}
                         </td>
                       </tr>
                     ))}
                   </tbody>
                 </table>
               </div>
-            </div>
+            </SectionCard>
           )}
 
-          {/* ── Section 3: Domo Session Details ── */}
-          <div className="bg-white/90 backdrop-blur-xl rounded-2xl shadow border border-indigo-100 px-4 py-3">
-            <p className="text-xs text-black uppercase tracking-widest font-semibold mb-3">
-              {visuals.length > 0 ? "3." : "2."} Domo Session Details
-            </p>
-
-            <div className="mb-2">
-              <label className="block text-xs font-medium text-slate-600 mb-1">Target Page ID</label>
-              <input
-                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition bg-white"
-                placeholder="e.g. 650770219"
-                value={domoForm.pageId}
-                onChange={(e) => setDomoForm({ ...domoForm, pageId: e.target.value })}
-              />
+          {/* Section 3: Domo Session */}
+          <SectionCard number={visuals.length > 0 ? "" : "Section 02"} title="Domo Session Details" icon={<TokenIcon />}>
+            <div style={{ display: "flex", flexDirection: "column", gap: "0.85rem" }}>
+              <div>
+                <label className="field-label" style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                  <span style={{ color: "var(--violet)" }}><IdIcon /></span>
+                  Target Page ID
+                </label>
+                <input className="fancy-input" placeholder="e.g. 650770219"
+                  value={domoForm.pageId} onChange={e => setDomoForm(p => ({ ...p, pageId: e.target.value }))} />
+              </div>
+              <div>
+                <label className="field-label" style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                  <span style={{ color: "var(--violet)" }}><TokenIcon /></span>
+                  CSRF Token
+                </label>
+                <input className="fancy-input" placeholder="Paste x-csrf-token value"
+                  value={domoForm.csrf} onChange={e => setDomoForm(p => ({ ...p, csrf: e.target.value }))} />
+              </div>
+              <div>
+                <label className="field-label" style={{ display: "flex", alignItems: "center", gap: 5 }}>
+                  <span style={{ color: "var(--violet)" }}><CookieIcon /></span>
+                  Session Cookies
+                </label>
+                <textarea
+                  rows={3}
+                  className="fancy-input"
+                  placeholder="Paste full cookie string from browser DevTools"
+                  value={domoForm.cookie}
+                  onChange={e => setDomoForm(p => ({ ...p, cookie: e.target.value }))}
+                  style={{ resize: "none", lineHeight: 1.5 }}
+                />
+              </div>
             </div>
+          </SectionCard>
 
-            <div className="mb-2">
-              <label className="block text-xs font-medium text-slate-600 mb-1">CSRF Token</label>
-              <input
-                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 transition bg-white"
-                placeholder="Paste x-csrf-token"
-                value={domoForm.csrf}
-                onChange={(e) => setDomoForm({ ...domoForm, csrf: e.target.value })}
-              />
-            </div>
-
-            <div>
-              <label className="block text-xs font-medium text-slate-600 mb-1">Session Cookies</label>
-              <textarea
-                rows="2"
-                className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 resize-none transition bg-white"
-                placeholder="Paste full cookie string from browser"
-                value={domoForm.cookie}
-                onChange={(e) => setDomoForm({ ...domoForm, cookie: e.target.value })}
-              />
-            </div>
-          </div>
-
-          {/* ── Execute Migration Button ── */}
+          {/* Execute */}
           <div>
             <button
               onClick={executeMigration}
               disabled={isLoading || isSuccess}
-              className="w-full py-3 rounded-2xl font-bold text-sm text-white bg-gradient-to-r from-emerald-500 to-teal-500 hover:opacity-90 active:scale-[0.98] transition-all shadow-lg disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+              className="btn-emerald"
+              style={{ padding: "0.9rem 1.2rem", fontSize: "0.9rem" }}
             >
               {isLoading ? (
-                <span className="flex items-center justify-center gap-2">
-                  <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24" fill="none">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8z" />
-                  </svg>
-                  Migrating...
-                </span>
-              ) : " Execute Full Migration"}
+                <>
+                  <div style={{ width: 17, height: 17, border: "2px solid rgba(255,255,255,0.35)", borderTopColor: "white", borderRadius: "50%", animation: "spin 0.8s linear infinite" }} />
+                  Migrating…
+                </>
+              ) : isSuccess ? (
+                <><CheckCircleIcon /> Migration Complete</>
+              ) : (
+                <><ZapIcon /> Execute Full Migration</>
+              )}
             </button>
 
             <AnimatePresence>
               {isSuccess && (
                 <motion.div
-                  initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                  className="mt-2 p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-emerald-700 text-xs text-center font-semibold"
+                  initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                  style={{ marginTop: "0.7rem", background: "rgba(16,185,129,0.07)", border: "1.5px solid rgba(16,185,129,0.2)", borderRadius: 14, padding: "0.85rem 1rem", display: "flex", alignItems: "center", gap: 9, fontSize: "0.85rem", fontWeight: 600, color: "#059669", fontFamily: "'Bricolage Grotesque', sans-serif" }}
                 >
-                  ✅ Migration Successful!
+                  <CheckCircleIcon /> Dashboard migrated to Domo successfully!
                 </motion.div>
               )}
               {isError && (
                 <motion.div
-                  initial={{ opacity: 0, y: 4 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
-                  className="mt-2 p-3 rounded-xl bg-red-50 border border-red-200 text-red-600 text-xs text-center font-semibold"
+                  initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }}
+                  style={{ marginTop: "0.7rem", background: "var(--rose-dim)", border: "1.5px solid rgba(244,63,94,0.2)", borderRadius: 14, padding: "0.85rem 1rem", fontSize: "0.82rem", color: "#e11d48" }}
                 >
-                  ❌ Error: {errorMsg}
+                  <span style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontWeight: 700, display: "flex", alignItems: "center", gap: 7, marginBottom: 4 }}>
+                    <AlertCircleIcon /> Migration failed
+                  </span>
+                  <span style={{ fontFamily: "'Outfit', sans-serif", opacity: 0.85 }}>{errorMsg}</span>
                 </motion.div>
               )}
             </AnimatePresence>
