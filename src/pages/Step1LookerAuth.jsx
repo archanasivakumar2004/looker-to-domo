@@ -176,15 +176,15 @@ export default function Step1LookerAuth({ setLookerCreds }) {
 
           {/* CTA Button — always fully visible */}
           <button onClick={next} disabled={!isValid} className="btn-primary">
-            Fetch Dashboards
+            GO
             <ArrowIcon />
           </button>
 
           {/* Security note */}
-          <div style={{ marginTop: "0.8rem", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, color: "var(--text-muted)", fontSize: "0.68rem" }}>
+          {/* <div style={{ marginTop: "0.8rem", display: "flex", alignItems: "center", justifyContent: "center", gap: 5, color: "var(--text-muted)", fontSize: "0.68rem" }}>
             <ShieldIcon />
             Credentials used only locally — never stored
-          </div>
+          </div> */}
         </div>
 
       </motion.div>
